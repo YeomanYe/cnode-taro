@@ -17,6 +17,9 @@
     "baseUrl": ".",
     "rootDir": ".",
     "jsx": "preserve",
+    "types":[
+      "node"
+    ],
     "typeRoots": [
       "node_modules/@types"
     ]

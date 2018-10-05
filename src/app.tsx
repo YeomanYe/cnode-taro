@@ -1,15 +1,21 @@
-import Taro, { Component, Config } from '@tarojs/taro'
+import Taro, {Component, Config} from '@tarojs/taro'
 import '@tarojs/async-await'
-import { Provider } from '@tarojs/redux'
-
-import Index from './pages/index'
-
-import configStore from './store'
+import {Provider} from '@tarojs/redux'
+import Index from './pages/index';
+import dva from './dva';
+import models from './model';
 
 import './app.scss'
+import {action} from "./utils/data-helper";
 
-const store = configStore()
-
+const dvaApp = dva.createApp({
+  initialState: {},
+  models: models,
+  onError(e, dispatch) {
+    dispatch(action("sys/error", e));
+  },
+});
+const store = dvaApp.getStore();
 class App extends Component {
 
   /**
@@ -21,31 +27,66 @@ class App extends Component {
    */
   config: Config = {
     pages: [
-      'pages/index/index'
+      'pages/index/index',
+      'pages/collect/index',
+      'pages/msg/index',
+      'pages/user/index',
     ],
     window: {
       backgroundTextStyle: 'light',
-      navigationBarBackgroundColor: '#fff',
-      navigationBarTitleText: 'WeChat',
-      navigationBarTextStyle: 'black'
+      navigationBarBackgroundColor: '#1296db',
+      navigationBarTitleText: 'CNode',
+      navigationBarTextStyle: 'white',
+      enablePullDownRefresh: true
+    },
+    tabBar: {
+      color: "#626567",
+      selectedColor: "#1296db",
+      backgroundColor: "#FBFBFB",
+      borderStyle: "white",
+      list: [{
+        pagePath: "pages/index/index",
+        text: "首页",
+        iconPath: "./asset/images/home.png",
+        selectedIconPath: "./asset/images/home_focus.png"
+      }, {
+        pagePath: "pages/collect/index",
+        text: "收藏",
+        iconPath: "./asset/images/collect.png",
+        selectedIconPath: "./asset/images/collect_focus.png"
+      }, {
+          pagePath: "pages/msg/index",
+          text: "消息",
+          iconPath: "./asset/images/msg.png",
+          selectedIconPath: "./asset/images/msg_focus.png"
+        }, {
+          pagePath: "pages/user/index",
+          text: "我的",
+          iconPath: "./asset/images/user.png",
+          selectedIconPath: "./asset/images/user_focus.png"
+        }]
     }
+  };
+
+  componentDidMount() {
   }
 
-  componentDidMount () {}
+  componentDidShow() {
+  }
 
-  componentDidShow () {}
+  componentDidHide() {
+  }
 
-  componentDidHide () {}
+  componentCatchError() {
+  }
 
-  componentCatchError () {}
-
-  render () {
+  render() {
     return (
       <Provider store={store}>
-        <Index />
+         <Index/>
       </Provider>
     )
   }
 }
 
-Taro.render(<App />, document.getElementById('app'))
+Taro.render(<App/>, document.getElementById('app'))

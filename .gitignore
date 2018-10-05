@@ -1,4 +1,5 @@
 dist/
 .temp/
 .rn_temp/
+.idea/
 node_modules/
