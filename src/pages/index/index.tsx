@@ -1,10 +1,14 @@
-import { ComponentClass } from 'react'
-import Taro, { Component, Config } from '@tarojs/taro'
-import { View, Button, Text } from '@tarojs/components'
-import { connect } from '@tarojs/redux'
+import {ComponentClass} from 'react'
+import Taro, {Component, Config} from '@tarojs/taro'
+import {View, Text, Image} from '@tarojs/components'
+import {connect} from '@tarojs/redux'
 
 
 import './index.scss'
+import {Topic} from "./model";
+import {cAction} from "../../utils/redux-helper";
+import {AnyAction} from "redux";
+import DateUtil from "../../utils/date-helper";
 
 // #region 书写注意
 //
@@ -17,15 +21,11 @@ import './index.scss'
 // #endregion
 
 type PageStateProps = {
-  counter: {
-    num: number
-  }
+  topics: Topic[]
 }
 
 type PageDispatchProps = {
-  add: () => void
-  dec: () => void
-  asyncAdd: () => any
+  query: () => AnyAction
 }
 
 type PageOwnProps = {}
@@ -38,53 +38,105 @@ interface Index {
   props: IProps;
 }
 
-@connect(({ counter }) => ({
-  counter
-}), (dispatch) => ({
-  add () {
-
-  },
-  dec () {
-
-  },
-  asyncAdd () {
-
-  }
-}))
+@connect(({topics}) => ({
+  topics
+}), dispatch => ({query: () => dispatch(cAction('topics/queryEff'))}))
 class Index extends Component {
 
-    /**
+  /**
    * 指定config的类型声明为: Taro.Config
    *
    * 由于 typescript 对于 object 类型推导只能推出 Key 的基本类型
    * 对于像 navigationBarTextStyle: 'black' 这样的推导出的类型是 string
    * 提示和声明 navigationBarTextStyle: 'black' | 'white' 类型冲突, 需要显示声明类型
    */
-    config: Config = {
+  config: Config = {
     navigationBarTitleText: '首页'
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     console.log(this.props, nextProps)
   }
 
-  componentWillUnmount () { }
+  componentWillUnmount() {
+  }
 
-  componentDidShow () { }
+  componentDidShow() {
+  }
 
-  componentDidHide () { }
+  componentDidHide() {
+  }
 
-  render () {
+  componentDidMount() {
+    console.log('props', this.props);
+    this.props.query();
+  }
+
+  render() {
+    const {topics} = this.props;
+    console.log('topics', topics);
+    const topic = resolveTopics(topics)[0];
     return (
       <View className='index'>
-        <Button className='add_btn' >+</Button>
-        <Button className='dec_btn' >-</Button>
-        <Button className='dec_btn' >async</Button>
-        <View><Text>10</Text></View>
-        <View><Text>Hello, World</Text></View>
+        <View className="topic">
+          <View className="head">
+            <View className={"badge " + topic.tab_text_class}>
+              <Text>{topic.tab_text}</Text>
+            </View>
+            <Text className="title">{topic.title}</Text>
+          </View>
+          <View
+            className="content">
+            <View className="left">
+              <Image className="avatar" src={topic.author.avatar_url}/>
+              <View className="info">
+                <Text>{topic.author.loginname}</Text>
+                <Text>{topic.create_at_text}</Text>
+              </View>
+            </View>
+            <View
+              className="right">
+              <View className='wrapCount'>
+                <Text className="reply_count">{topic.reply_count}</Text>
+                <Text>/</Text>
+                <Text>{topic.visit_count}</Text>
+              </View>
+              <Text>{topic.last_reply_at_text}</Text>
+            </View>
+          </View>
+        </View>
       </View>
     )
   }
+}
+
+function resolveTopics(topics: Topic[]): any[] {
+  return topics.map(topic => {
+    let {last_reply_at, create_at,tab,good,top} = topic;
+    let tab_text,tab_text_class;
+    if(top){
+      tab_text = '置顶';
+      tab_text_class = 'blue';
+    }else if(good){
+      tab_text = '精华';
+      tab_text_class = 'orange';
+    }else{
+      switch (tab){
+        default:
+        case 'dev':tab_text = '测试';tab_text_class = 'red';break;
+        case 'ask':tab_text = '问答'; tab_text_class = 'green';break;
+        case 'share':tab_text = '分享';tab_text_class = 'purple';break;
+        case 'job':tab_text = '招聘';tab_text_class = 'brown';break;
+      }
+    }
+    return {
+      ...topic,
+      tab_text,
+      tab_text_class,
+      create_at_text: DateUtil.format(new Date(create_at), 'yyyy-MM-dd'),
+      last_reply_at_text: DateUtil.format(new Date(last_reply_at), 'yyyy-MM-dd')
+    }
+  });
 }
 
 // #region 导出注意

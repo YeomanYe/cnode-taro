@@ -1,4 +1,4 @@
-import {httpReq} from '../../utils/data-helper';
+import {httpReq} from '../../utils/request-helper';
 
 export const demo = (data) => {
   return httpReq({

@@ -6,15 +6,16 @@ import dva from './dva';
 import models from './model';
 
 import './app.scss'
-import {action} from "./utils/data-helper";
+import {cAction} from "./utils/redux-helper";
 
 const dvaApp = dva.createApp({
   initialState: {},
   models: models,
   onError(e, dispatch) {
-    dispatch(action("sys/error", e));
+    dispatch(cAction("sys/error", e));
   },
 });
+
 const store = dvaApp.getStore();
 class App extends Component {
 
