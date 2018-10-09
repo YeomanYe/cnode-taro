@@ -8,7 +8,7 @@ import './index.scss';
 }))
 export default class Collect extends Component {
   config = {
-    navigationBarTitleText: 'collect',
+    navigationBarTitleText: '收藏',
   };
 
   componentDidMount = () => {

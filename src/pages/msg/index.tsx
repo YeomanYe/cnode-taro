@@ -8,7 +8,7 @@ import './index.scss';
 }))
 export default class Msg extends Component {
   config = {
-    navigationBarTitleText: 'msg',
+    navigationBarTitleText: '消息',
   };
 
   componentDidMount = () => {

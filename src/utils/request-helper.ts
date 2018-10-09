@@ -49,7 +49,7 @@ export function httpReq(options: ReqOption = {method: ReqType.GET, data: {},head
 }
 
 export async function formGet(url:string,data?:any,header:any = {}) {
-  header['Content-Type'] = 'application/x-www-form-urlencoded';
+  url = url + '?' +_objToForm(data);
   return await httpReq({method:ReqType.GET,url,data,header})
 }
 
@@ -57,4 +57,14 @@ export function reqIsSuccess(data:any) {
     let flag = true;
     if(data.success !== true) flag = false;
     return flag;
+}
+
+function _objToForm(obj) {
+  if (!obj) return null;
+  let keyArr = Object.keys(obj),
+    formArr:string[] = [];
+  for (let i = 0, len = keyArr.length; i < len; i++) {
+    formArr.push(encodeURIComponent(keyArr[i]) + '=' + encodeURIComponent(obj[keyArr[i]]));
+  }
+  return formArr.join('&');
 }

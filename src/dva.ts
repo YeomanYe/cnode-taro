@@ -27,7 +27,7 @@ function createApp(opt) {
 
 export default {
   createApp,
-  getDispatch() {
+  get dispatch(){
     return app.dispatch;
   }
 }

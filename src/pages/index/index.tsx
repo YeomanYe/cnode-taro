@@ -1,14 +1,15 @@
 import {ComponentClass} from 'react'
 import Taro, {Component, Config} from '@tarojs/taro'
-import {View, Text, Image} from '@tarojs/components'
+import {ScrollView, View} from '@tarojs/components'
 import {connect} from '@tarojs/redux'
-
-
-import './index.scss'
-import {Topic} from "./model";
-import {cAction} from "../../utils/redux-helper";
 import {AnyAction} from "redux";
+
+
+import {cAction} from "../../utils/redux-helper";
 import DateUtil from "../../utils/date-helper";
+import Topic, {IShowTopic} from "../../components/Topic";
+import {ITopic} from "./model";
+import './index.scss'
 
 // #region 书写注意
 //
@@ -21,11 +22,13 @@ import DateUtil from "../../utils/date-helper";
 // #endregion
 
 type PageStateProps = {
-  topics: Topic[]
+  topics: ITopic[],
+  width:number,
+  height:number,
 }
 
 type PageDispatchProps = {
-  query: () => AnyAction
+  query: (object?) => AnyAction
 }
 
 type PageOwnProps = {}
@@ -38,9 +41,11 @@ interface Index {
   props: IProps;
 }
 
-@connect(({topics}) => ({
-  topics
-}), dispatch => ({query: () => dispatch(cAction('topics/queryEff'))}))
+let page = 0;
+
+@connect(({topics,sys:{windowWidth,windowHeight}}) => ({
+  topics,width:windowWidth, height:windowHeight
+}), dispatch => ({query: (param)=> dispatch(cAction('topics/queryEff',param))}))
 class Index extends Component {
 
   /**
@@ -54,9 +59,6 @@ class Index extends Component {
     navigationBarTitleText: '首页'
   }
 
-  componentWillReceiveProps(nextProps) {
-    console.log(this.props, nextProps)
-  }
 
   componentWillUnmount() {
   }
@@ -68,65 +70,72 @@ class Index extends Component {
   }
 
   componentDidMount() {
-    console.log('props', this.props);
+  }
+
+  componentWillMount(){
+    page = 1;
     this.props.query();
   }
 
+  queryByPage = () => {
+    const {query} = this.props;
+    console.log('page',page);
+    query({page:++page})
+  };
+
   render() {
-    const {topics} = this.props;
+    const {topics,height} = this.props;
     console.log('topics', topics);
-    const topic = resolveTopics(topics)[0];
+    let showTopics:IShowTopic[] = resolveTopics(topics);
     return (
       <View className='index'>
-        <View className="topic">
-          <View className="head">
-            <View className={"badge " + topic.tab_text_class}>
-              <Text>{topic.tab_text}</Text>
-            </View>
-            <Text className="title">{topic.title}</Text>
-          </View>
-          <View
-            className="content">
-            <View className="left">
-              <Image className="avatar" src={topic.author.avatar_url}/>
-              <View className="info">
-                <Text>{topic.author.loginname}</Text>
-                <Text>{topic.create_at_text}</Text>
-              </View>
-            </View>
-            <View
-              className="right">
-              <View className='wrapCount'>
-                <Text className="reply_count">{topic.reply_count}</Text>
-                <Text>/</Text>
-                <Text>{topic.visit_count}</Text>
-              </View>
-              <Text>{topic.last_reply_at_text}</Text>
-            </View>
-          </View>
-        </View>
+        <ScrollView
+          className='scrollview'
+          scrollY
+          scrollWithAnimation
+          scrollTop={0}
+          style={`height:${height}px`}
+          enableBackToTop={true}
+          lowerThreshold={50}
+          upperThreshold={50}
+          onScrollToLower={this.queryByPage}
+          >
+          {showTopics.map(data => <Topic key={data.id} data={data}/>)}
+        </ScrollView>
       </View>
     )
   }
 }
 
-function resolveTopics(topics: Topic[]): any[] {
+function resolveTopics(topics: ITopic[]): IShowTopic[] {
   return topics.map(topic => {
-    let {last_reply_at, create_at,tab,good,top} = topic;
-    let tab_text,tab_text_class;
-    if(top){
+    let {last_reply_at, create_at, tab, good, top} = topic;
+    let tab_text, tab_text_class;
+    if (top) {
       tab_text = '置顶';
       tab_text_class = 'blue';
-    }else if(good){
+    } else if (good) {
       tab_text = '精华';
       tab_text_class = 'orange';
-    }else{
-      switch (tab){
+    } else {
+      switch (tab) {
         default:
-        case 'dev':tab_text = '测试';tab_text_class = 'red';break;
-        case 'ask':tab_text = '问答'; tab_text_class = 'green';break;
-        case 'share':tab_text = '分享';tab_text_class = 'purple';break;
-        case 'job':tab_text = '招聘';tab_text_class = 'brown';break;
+        case 'dev':
+          tab_text = '测试';
+          tab_text_class = 'red';
+          break;
+        case 'ask':
+          tab_text = '问答';
+          tab_text_class = 'green';
+          break;
+        case 'share':
+          tab_text = '分享';
+          tab_text_class = 'purple';
+          break;
+        case 'job':
+          tab_text = '招聘';
+          tab_text_class = 'brown';
+          break;
       }
     }
     return {

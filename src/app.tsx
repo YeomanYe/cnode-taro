@@ -7,6 +7,7 @@ import models from './model';
 
 import './app.scss'
 import {cAction} from "./utils/redux-helper";
+import {ISystemInfo} from "./model/sys";
 
 const dvaApp = dva.createApp({
   initialState: {},
@@ -17,6 +18,14 @@ const dvaApp = dva.createApp({
 });
 
 const store = dvaApp.getStore();
+
+//保存系统信息
+Taro.getSystemInfo({
+  success(object:ISystemInfo) {
+    console.log(object);
+    dvaApp.dispatch(cAction("sys/save",object));
+  }
+});
 class App extends Component {
 
   /**

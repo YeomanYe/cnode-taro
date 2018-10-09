@@ -8,7 +8,7 @@ import './index.scss';
 }))
 export default class User extends Component {
   config = {
-    navigationBarTitleText: 'user',
+    navigationBarTitleText: '我的',
   };
 
   componentDidMount = () => {

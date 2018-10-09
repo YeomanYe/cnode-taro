@@ -25,6 +25,18 @@ $bg-color-panel: #EC5D75 !default;
 $tag-primary:#D87182 !default;
 $tag-dark:#555 !default;
 
+$red-color: rgb(231, 76, 60);
+$blue-color: #3a8ee6;
+$purple-color: rgb(190, 140, 225);
+$grey-color: rgb(219, 219, 219);
+$green-color: rgb(56,185,131);
+.red {
+  background: $red-color;
+}
+
+.blue {
+  background: $blue-color;
+}
 
 /* methods
 -------------------------- */

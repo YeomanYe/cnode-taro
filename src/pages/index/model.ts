@@ -7,7 +7,7 @@ export default {
     * queryEff({payload}, { call, put }) {
       const { success, data } = yield call(indexApi.getTopics, payload);
       if (success === true) {
-        yield put(cAction('query',data));
+        yield put(cAction('add',data));
       }
     },
   },
@@ -17,13 +17,13 @@ export default {
 
 };
 
-export interface Author {
+export interface IAuthor {
   avatar_url:string;
   loginname:string;
 }
 
-export interface Topic {
-  author:Author;
+export interface ITopic {
+  author:IAuthor;
   author_id:string;
   content:string;
   create_at:string;
