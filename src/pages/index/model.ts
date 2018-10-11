@@ -5,10 +5,12 @@ export default {
   state: [],
   effects: {
     * queryEff({payload}, { call, put }) {
-      const { success, data } = yield call(indexApi.getTopics, payload);
-      if (success === true) {
-        yield put(cAction('add',data));
-      }
+      const data = yield call(indexApi.getTopics, payload);
+      yield put(cAction('query',data));
+    },
+    * addEff({payload}, { call, put }) {
+      const data = yield call(indexApi.getTopics, payload);
+      yield put(cAction('add',data));
     },
   },
   reducers: {

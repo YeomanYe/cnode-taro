@@ -1,15 +1,17 @@
 import {ComponentClass} from 'react'
 import Taro, {Component, Config} from '@tarojs/taro'
-import {ScrollView, View} from '@tarojs/components'
+import {View} from '@tarojs/components'
 import {connect} from '@tarojs/redux'
 import {AnyAction} from "redux";
+import {AtTabs} from 'taro-ui';
 
 
 import {cAction} from "../../utils/redux-helper";
 import DateUtil from "../../utils/date-helper";
-import Topic, {IShowTopic} from "../../components/Topic";
+import {IShowTopic} from "../../components/Topic";
 import {ITopic} from "./model";
 import './index.scss'
+import TopicTabPanel from "./TopicTabPanel";
 
 // #region 书写注意
 //
@@ -23,17 +25,20 @@ import './index.scss'
 
 type PageStateProps = {
   topics: ITopic[],
-  width:number,
-  height:number,
+  width: number,
+  height: number,
 }
 
 type PageDispatchProps = {
   query: (object?) => AnyAction
+  add: (object?) => AnyAction
 }
 
 type PageOwnProps = {}
 
-type PageState = {}
+type PageState = {
+  curTab: number
+}
 
 type IProps = PageStateProps & PageDispatchProps & PageOwnProps
 
@@ -43,9 +48,30 @@ interface Index {
 
 let page = 0;
 
-@connect(({topics,sys:{windowWidth,windowHeight}}) => ({
-  topics,width:windowWidth, height:windowHeight
-}), dispatch => ({query: (param)=> dispatch(cAction('topics/queryEff',param))}))
+/*const TopicTabPanel = ({datas, height, add}) => (
+  <AtTabsPane>
+    <ScrollView
+      className='scrollview'
+      scrollY
+      scrollWithAnimation
+      scrollTop={0}
+      style={`height:${height - 45}px`}
+      enableBackToTop={true}
+      lowerThreshold={50}
+      upperThreshold={50}
+      onScrollToLower={add}
+    >
+      {datas.map(data => <Topic key={data.id} data={data}/>)}
+    </ScrollView>
+  </AtTabsPane>
+);*/
+
+@connect(({topics, sys: {windowWidth, windowHeight}}) => ({
+  topics, width: windowWidth, height: windowHeight
+}), dispatch => ({
+  query: (param) => dispatch(cAction('topics/queryEff', param)),
+  add: (param) => dispatch(cAction('topics/addEff', param)),
+}))
 class Index extends Component {
 
   /**
@@ -72,36 +98,50 @@ class Index extends Component {
   componentDidMount() {
   }
 
-  componentWillMount(){
+  componentWillMount() {
     page = 1;
     this.props.query();
   }
 
-  queryByPage = () => {
-    const {query} = this.props;
-    console.log('page',page);
-    query({page:++page})
+  createAdd = (tab) => () => {
+    const {add} = this.props;
+    add({page: ++page,tab});
+  };
+
+  onTabClick = (curTab) => {
+    page = 1;
+    let {query} = this.props;
+    let tab = '';
+    switch (curTab){
+      case 0:break;
+      case 1:tab = 'good';break;
+      case 2:tab = 'share';break;
+      case 3:tab = 'ask';break;
+      case 4:tab = 'job';break;
+      case 5:tab = 'dev';break;
+    }
+    query({tab});
+    this.setState({curTab});
+  };
+
+  state = {
+    curTab: 0
   };
 
   render() {
-    const {topics,height} = this.props;
-    console.log('topics', topics);
-    let showTopics:IShowTopic[] = resolveTopics(topics);
+    const {curTab} = this.state;
+    const {topics} = this.props;
+    let showTopics: IShowTopic[] = resolveTopics(topics);
+    let tabList = [{title: '全部',tab:''}, {title: '精华',tab:'good'}, {title: '分享',tab:'share'}, {title: '问答',tab:'ask'}, {title: '招聘',tab:'job'}, {title: '其他',tab:'dev'}];
     return (
       <View className='index'>
-        <ScrollView
-          className='scrollview'
-          scrollY
-          scrollWithAnimation
-          scrollTop={0}
-          style={`height:${height}px`}
-          enableBackToTop={true}
-          lowerThreshold={50}
-          upperThreshold={50}
-          onScrollToLower={this.queryByPage}
-          >
-          {showTopics.map(data => <Topic key={data.id} data={data}/>)}
-        </ScrollView>
+        <AtTabs
+          current={curTab}
+          swipeable
+          onClick={this.onTabClick}
+          tabList={tabList}>
+          {tabList.map(data => <TopicTabPanel key={data.tab} datas={showTopics} add={this.createAdd(data.tab)}/>)}
+        </AtTabs>
       </View>
     )
   }
