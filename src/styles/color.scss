@@ -1,0 +1,47 @@
+/* colors
+-------------------------- */
+$color-primary : #D87182 !default;
+$color-dark : #333 !default;
+$color-dark2 : #666 !default;
+$color-light: #888 !default;
+
+/* button-colors
+-------------------------- */
+$btn-active: #F26D83 !default;
+$btn-disabled: #CCC !default;
+
+$btn-disabled-1: mix(#fff, $btn-active, 70%) !default;
+/* 53a8ff */
+
+/* background-colors
+-------------------------- */
+$bg-color-base: #fff !default;
+$bg-color-light : #f9f9f9 !default; //页面浅灰背景&图片浅灰背景
+$bg-color-danger: #F9EFEF !default; //页面浅红背景&按钮边框
+$bg-color-panel: #EC5D75 !default;
+
+/* tag-colors
+-------------------------- */
+$tag-primary:#D87182 !default;
+$tag-dark:#555 !default;
+
+$red: rgb(231, 76, 60);
+$blue: #3a8ee6;
+$purple: rgb(190, 140, 225);
+$grey: rgb(219, 219, 219);
+$green: rgb(56,185,131);
+$yellow: rgb(245, 193, 50);
+$brown: rgb(132, 132, 39);
+
+/*g color list
+--------------*/
+$map:(red:$red,blue:$blue,purple:$purple,grey:$grey,green:$green,yellow:$yellow,brown:$brown);
+
+@each $key,$val in $map {
+  .#{$key}-bg{
+    background-color: #{$val};
+  }
+  .#{$key}{
+    color:#{$val};
+  }
+}

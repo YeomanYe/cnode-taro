@@ -1,6 +1,7 @@
-@import "../../styles/mixin";
+@import "../../styles/index";
+
 .topic {
-  border-bottom: 1px solid $grey-color;
+  border-bottom: 1px solid $grey;
   padding: 20px;
   .head {
     display: flex;
@@ -11,7 +12,6 @@
       font-size: 32px;
       margin-right: 20px;
       color: white;
-      background: #3a8ee6;
       .badge-text{
         width: 120px;
       }
@@ -47,7 +47,7 @@
         flex-direction: row;
         justify-content: space-between;
         .reply-count{
-          color: $green-color;
+          color: $green;
           font-weight: bold;
         }
         .separate-count{

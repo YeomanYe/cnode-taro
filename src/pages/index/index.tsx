@@ -27,11 +27,11 @@ type PageStateProps = {
   topics: ITopic[],
   width: number,
   height: number,
+  isLoad:any,
 }
 
 type PageDispatchProps = {
   query: (object?) => AnyAction
-  add: (object?) => AnyAction
 }
 
 type PageOwnProps = {}
@@ -46,31 +46,11 @@ interface Index {
   props: IProps;
 }
 
-let page = 0;
 
-/*const TopicTabPanel = ({datas, height, add}) => (
-  <AtTabsPane>
-    <ScrollView
-      className='scrollview'
-      scrollY
-      scrollWithAnimation
-      scrollTop={0}
-      style={`height:${height - 45}px`}
-      enableBackToTop={true}
-      lowerThreshold={50}
-      upperThreshold={50}
-      onScrollToLower={add}
-    >
-      {datas.map(data => <Topic key={data.id} data={data}/>)}
-    </ScrollView>
-  </AtTabsPane>
-);*/
-
-@connect(({topics, sys: {windowWidth, windowHeight}}) => ({
-  topics, width: windowWidth, height: windowHeight
+@connect(({topics,loading, sys: {windowWidth, windowHeight}}) => ({
+  topics, width: windowWidth, height: windowHeight,isLoad:loading.effects['topics/queryEff']
 }), dispatch => ({
-  query: (param) => dispatch(cAction('topics/queryEff', param)),
-  add: (param) => dispatch(cAction('topics/addEff', param)),
+  query: (param) => dispatch(cAction('topics/queryEff', param))
 }))
 class Index extends Component {
 
@@ -99,28 +79,12 @@ class Index extends Component {
   }
 
   componentWillMount() {
-    page = 1;
     this.props.query();
   }
 
-  createAdd = (tab) => () => {
-    const {add} = this.props;
-    add({page: ++page,tab});
-  };
-
   onTabClick = (curTab) => {
-    page = 1;
     let {query} = this.props;
-    let tab = '';
-    switch (curTab){
-      case 0:break;
-      case 1:tab = 'good';break;
-      case 2:tab = 'share';break;
-      case 3:tab = 'ask';break;
-      case 4:tab = 'job';break;
-      case 5:tab = 'dev';break;
-    }
-    query({tab});
+    query({tab:tabList[curTab].tab});
     this.setState({curTab});
   };
 
@@ -132,7 +96,6 @@ class Index extends Component {
     const {curTab} = this.state;
     const {topics} = this.props;
     let showTopics: IShowTopic[] = resolveTopics(topics);
-    let tabList = [{title: '全部',tab:''}, {title: '精华',tab:'good'}, {title: '分享',tab:'share'}, {title: '问答',tab:'ask'}, {title: '招聘',tab:'job'}, {title: '其他',tab:'dev'}];
     return (
       <View className='index'>
         <AtTabs
@@ -140,12 +103,14 @@ class Index extends Component {
           swipeable
           onClick={this.onTabClick}
           tabList={tabList}>
-          {tabList.map(data => <TopicTabPanel key={data.tab} datas={showTopics} add={this.createAdd(data.tab)}/>)}
+          {tabList.map((data,i) => <TopicTabPanel index={i} curIndex={curTab} key={data.tab} datas={showTopics} tab={data.tab}/>)}
         </AtTabs>
       </View>
     )
   }
 }
+let tabList = [{title: '全部',tab:''}, {title: '精华',tab:'good'}, {title: '分享',tab:'share'}, {title: '问答',tab:'ask'}, {title: '招聘',tab:'job'}, {title: '其他',tab:'dev'}];
+
 
 function resolveTopics(topics: ITopic[]): IShowTopic[] {
   return topics.map(topic => {
@@ -153,28 +118,28 @@ function resolveTopics(topics: ITopic[]): IShowTopic[] {
     let tab_text, tab_text_class;
     if (top) {
       tab_text = '置顶';
-      tab_text_class = 'blue';
+      tab_text_class = 'blue-bg';
     } else if (good) {
       tab_text = '精华';
-      tab_text_class = 'orange';
+      tab_text_class = 'yellow-bg';
     } else {
       switch (tab) {
         default:
         case 'dev':
           tab_text = '测试';
-          tab_text_class = 'red';
+          tab_text_class = 'red-bg';
           break;
         case 'ask':
           tab_text = '问答';
-          tab_text_class = 'green';
+          tab_text_class = 'green-bg';
           break;
         case 'share':
           tab_text = '分享';
-          tab_text_class = 'purple';
+          tab_text_class = 'purple-bg';
           break;
         case 'job':
           tab_text = '招聘';
-          tab_text_class = 'brown';
+          tab_text_class = 'brown-bg';
           break;
       }
     }
