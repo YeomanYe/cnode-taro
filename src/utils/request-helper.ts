@@ -53,7 +53,7 @@ export async function formGet(url:string,data?:any,header:any = {}) {
   return await httpReq({method:ReqType.GET,url,data,header})
 }
 
-export function extractRes(res:any, defaultValue:any) :any{
+export function extractRes(res:any, defaultValue?:any) :any{
   if(res && res.success){
     return res.data;
   }

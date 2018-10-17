@@ -40,6 +40,7 @@ $map:(red:$red,blue:$blue,purple:$purple,grey:$grey,green:$green,yellow:$yellow,
 @each $key,$val in $map {
   .#{$key}-bg{
     background-color: #{$val};
+    color:white;
   }
   .#{$key}{
     color:#{$val};

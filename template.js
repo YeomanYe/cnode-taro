@@ -18,6 +18,27 @@ import { View } from '@tarojs/components';
 import { connect } from '@tarojs/redux';
 import './index.scss';
 
+type PageStateProps = {
+
+}
+
+type PageDispatchProps = {
+  
+}
+
+type PageOwnProps = {
+}
+
+type PageState = {
+
+}
+type IProps = PageStateProps & PageDispatchProps & PageOwnProps
+
+interface ${titleCase(dirName)} {
+  props: IProps;
+  state:PageState;
+}
+
 @connect(({${dirName}}) => ({
   ...${dirName},
 }))
@@ -38,10 +59,11 @@ export default class ${titleCase(dirName)} extends Component {
     )
   }
 }
+export default ${titleCase(dirName)} as ComponentClass<PageOwnProps, PageState>
 `;
 
 // scss文件模版
-const scssTep = `@import "../../styles/mixin";
+const scssTep = `@import "../../styles/index";
 
 .${dirName}-page {
   @include wh(100%, 100%);
@@ -50,6 +72,7 @@ const scssTep = `@import "../../styles/mixin";
 
 // model文件模版
 const modelTep = `import * as ${dirName}Api from './service';
+import ReduxUtil,{cAction} from "../../utils/redux-helper";
 
 export default {
   namespace: '${dirName}',
@@ -58,14 +81,8 @@ export default {
   },
 
   effects: {
-    * effectsDemo(_, { call, put }) {
-      const { status, data } = yield call(${dirName}Api.demo, {});
-      if (status === 'ok') {
-        yield put({ type: 'save',
-          payload: {
-            topData: data,
-          } });
-      }
+    * queryEff({payload}, { call, put }) {
+      
     },
   },
 
@@ -80,15 +97,13 @@ export default {
 
 
 // service页面模版
-const serviceTep = `import {httpReq} from '../../utils/data-helper';
+const serviceTep = `import {extractRes,formGet} from '../../utils/request-helper';
 
-export const demo = (data) => {
-  return httpReq({
-    url: '路径',
-    method: 'POST',
-    data,
-  });
-};
+export async function query(param){
+  let url = '';
+  let resObj = await formGet(url,param);
+  return extractRes(resObj);
+}
 `;
 
 

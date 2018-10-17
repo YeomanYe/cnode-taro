@@ -1,0 +1,47 @@
+@import "../../styles/index";
+
+.login-page {
+  padding: 25px;
+  .header{
+    text-align: center;
+    position: relative;
+    .title{
+      font-weight: 500;
+      font-size: 64px;
+      @extend .blue;
+    }
+    .close-btn{
+      position: absolute;
+      top: 0px;
+      right: 25px;
+      .close-btn-icon{
+        width: 50px;
+        height: 50px;
+      }
+    }
+  }
+  .content{
+    margin-top: 20px;
+    overflow: hidden;
+    .form-input{
+      border-bottom: 1px solid $grey;
+      padding: 25px;
+      &.selected{
+        border-bottom: 1px solid $blue;
+      }
+    }
+  }
+  .submit-btn{
+    @extend .blue-bg;
+    margin-top: 30px;
+    border-radius: 5px;
+    text-align: center;
+    height: 80px;
+    .btn-text{
+      line-height: 80px;
+      vertical-align: middle;
+      font-size: 36px;
+      color: white;
+    }
+  }
+}

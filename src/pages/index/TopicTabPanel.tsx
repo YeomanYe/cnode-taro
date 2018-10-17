@@ -56,7 +56,7 @@ class TopicTabPanel extends Component {
     return (
       <AtTabsPane current={curIndex} index={index}>
         {this.props.isLoading ?
-          <View style={`height:${height - 45}px`}>
+          <View style={`height:${height - 45}px;position: relative`}>
             <AtActivityIndicator content='加载中' mode='center'/>
           </View> :
           <ScrollView

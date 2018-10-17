@@ -3,3 +3,4 @@ dist/
 .rn_temp/
 .idea/
 node_modules/
+*.log
