@@ -12,11 +12,15 @@ if (!dirName) {
   process.exit(0);
 }
 
+let tmpArr = dirName.split('/');
+let fileName = tmpArr[tmpArr.length - 1];
+
 // 页面模版
 const indexTep = `import Taro, { Component } from '@tarojs/taro';
 import { View } from '@tarojs/components';
 import { connect } from '@tarojs/redux';
 import './index.scss';
+import {ComponentClass} from "react";
 
 type PageStateProps = {
 
@@ -34,17 +38,17 @@ type PageState = {
 }
 type IProps = PageStateProps & PageDispatchProps & PageOwnProps
 
-interface ${titleCase(dirName)} {
+interface ${titleCase(fileName)} {
   props: IProps;
   state:PageState;
 }
 
-@connect(({${dirName}}) => ({
-  ...${dirName},
+@connect(({${fileName}}) => ({
+  ...${fileName},
 }))
-export default class ${titleCase(dirName)} extends Component {
+class ${titleCase(fileName)} extends Component {
   config = {
-    navigationBarTitleText: '${dirName}',
+    navigationBarTitleText: '${fileName}',
   };
 
   componentDidMount = () => {
@@ -53,29 +57,29 @@ export default class ${titleCase(dirName)} extends Component {
 
   render() {
     return (
-      <View className="${dirName}-page">
-        ${dirName}
+      <View className="${fileName}-page">
+        ${fileName}
       </View>
     )
   }
 }
-export default ${titleCase(dirName)} as ComponentClass<PageOwnProps, PageState>
+export default ${titleCase(fileName)} as ComponentClass<PageOwnProps, PageState>
 `;
 
 // scss文件模版
 const scssTep = `@import "../../styles/index";
 
-.${dirName}-page {
+.${fileName}-page {
   @include wh(100%, 100%);
 }
 `;
 
 // model文件模版
-const modelTep = `import * as ${dirName}Api from './service';
+const modelTep = `import * as ${fileName}Api from './service';
 import ReduxUtil,{cAction} from "../../utils/redux-helper";
 
 export default {
-  namespace: '${dirName}',
+  namespace: '${fileName}',
   state: {
 
   },
@@ -119,11 +123,11 @@ fs.writeFileSync('service.ts', serviceTep);
 console.log(`模版${dirName}已创建,请手动增加models`);
 
 function titleCase(str) {
-  const array = str.toLowerCase().split(' ');
+  const array = str.toLowerCase().split('-');
   for (let i = 0; i < array.length; i++) {
     array[i] = array[i][0].toUpperCase() + array[i].substring(1, array[i].length);
   }
-  const string = array.join(' ');
+  const string = array.join('');
   return string;
 }
 

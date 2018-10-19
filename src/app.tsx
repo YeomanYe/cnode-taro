@@ -21,11 +21,12 @@ const store = dvaApp.getStore();
 
 //保存系统信息
 Taro.getSystemInfo({
-  success(object:ISystemInfo) {
+  success(object: ISystemInfo) {
     console.log(object);
-    dvaApp.dispatch(cAction("sys/save",object));
+    dvaApp.dispatch(cAction("sys/save", object));
   }
 });
+
 class App extends Component {
 
   /**
@@ -66,16 +67,16 @@ class App extends Component {
         iconPath: "./asset/images/collect.png",
         selectedIconPath: "./asset/images/collect_focus.png"
       }, {
-          pagePath: "pages/msg/index",
-          text: "消息",
-          iconPath: "./asset/images/msg.png",
-          selectedIconPath: "./asset/images/msg_focus.png"
-        }, {
-          pagePath: "pages/user/index",
-          text: "我的",
-          iconPath: "./asset/images/user.png",
-          selectedIconPath: "./asset/images/user_focus.png"
-        }]
+        pagePath: "pages/msg/index",
+        text: "消息",
+        iconPath: "./asset/images/msg.png",
+        selectedIconPath: "./asset/images/msg_focus.png"
+      }, {
+        pagePath: "pages/user/index",
+        text: "我的",
+        iconPath: "./asset/images/user.png",
+        selectedIconPath: "./asset/images/user_focus.png"
+      }]
     }
   };
 
@@ -94,7 +95,7 @@ class App extends Component {
   render() {
     return (
       <Provider store={store}>
-         <Index/>
+        <Index/>
       </Provider>
     )
   }
