@@ -1,22 +1,23 @@
-import * as loginApi from './service';
 import ReduxUtil,{cAction} from "../../utils/redux-helper";
+import {login} from "./service";
 
 export default {
-  namespace: 'login',
+  namespace: 'user',
   state: {
 
   },
 
   effects: {
-    * queryEff({payload}, { call, put }) {
-
+    * loginEff({payload}, { call, put }) {
+      let resObj = yield call(login,payload);
+      if(resObj.success){
+        yield put(cAction('save',{name:resObj.loginname,avatar:resObj.avatar_url,id:resObj.id}));
+      }
     },
   },
 
   reducers: {
-    save(state, { payload }) {
-      return { ...state, ...payload };
-    },
+    ...ReduxUtil.createObjReducer()
   },
 
 };

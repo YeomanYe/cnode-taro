@@ -1,3 +1,6 @@
+import ReduxUtil, {cAction} from "./src/utils/redux-helper";
+import * as indexApi from "./src/pages/index/service";
+
 /**
  * pages模版快速生成脚本,执行命令 npm run tep `文件名`
  */
@@ -13,7 +16,14 @@ if (!dirName) {
 }
 
 let tmpArr = dirName.split('/');
+let len = tmpArr.length;
 let fileName = tmpArr[tmpArr.length - 1];
+
+let prefixPath = '../';
+
+for(let i=0;i<len;i++){
+  prefixPath += '../'
+}
 
 // 页面模版
 const indexTep = `import Taro, { Component } from '@tarojs/taro';
@@ -67,33 +77,30 @@ export default ${titleCase(fileName)} as ComponentClass<PageOwnProps, PageState>
 `;
 
 // scss文件模版
-const scssTep = `@import "../../styles/index";
+const scssTep = `@import "${prefixPath}styles/index";
 
 .${fileName}-page {
-  @include wh(100%, 100%);
+  
 }
 `;
 
 // model文件模版
-const modelTep = `import * as ${fileName}Api from './service';
-import ReduxUtil,{cAction} from "../../utils/redux-helper";
+const modelTep = `import {query} from './service';
+import ReduxUtil,{cAction} from "${prefixPath}utils/redux-helper";
 
 export default {
   namespace: '${fileName}',
-  state: {
-
-  },
+  state: [],
 
   effects: {
     * queryEff({payload}, { call, put }) {
-      
+      const data = yield call(indexApi.getTopics, payload);
+      yield put(cAction('query',data));
     },
   },
 
   reducers: {
-    save(state, { payload }) {
-      return { ...state, ...payload };
-    },
+    ...ReduxUtil.createArrReducer()
   },
 
 };
@@ -101,12 +108,11 @@ export default {
 
 
 // service页面模版
-const serviceTep = `import {extractRes,formGet} from '../../utils/request-helper';
+const serviceTep = `import {formGet} from '${prefixPath}utils/request-helper';
 
 export async function query(param){
   let url = '';
-  let resObj = await formGet(url,param);
-  return extractRes(resObj);
+  return await formGet(url,param);
 }
 `;
 

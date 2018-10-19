@@ -1,7 +1,8 @@
-import {extractRes,formGet} from '../../utils/request-helper';
+import {formPost} from '../../utils/request-helper';
 
-export async function query(param){
-  let url = '';
-  let resObj = await formGet(url,param);
-  return extractRes(resObj);
+
+export async function login(accesstoken) {
+  let url = '/accesstoken';
+  let resObj = await formPost(url,{accesstoken});
+  return resObj;
 }

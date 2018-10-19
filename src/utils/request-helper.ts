@@ -48,6 +48,11 @@ export function httpReq(options: ReqOption = {method: ReqType.GET, data: {},head
   })
 }
 
+export async function formPost(url:string,data:any,header:any = {}) {
+  header['Content-Type'] = 'application/x-www-form-urlencoded';
+  return await httpReq({method:ReqType.POST,url,data,header});
+}
+
 export async function formGet(url:string,data?:any,header:any = {}) {
   url = url + '?' +_objToForm(data);
   return await httpReq({method:ReqType.GET,url,data,header})

@@ -3,89 +3,92 @@ import {Image, Input, Text, View} from '@tarojs/components';
 import {connect} from '@tarojs/redux';
 import './index.scss';
 import {ComponentClass} from "react";
+import {changeHandlerFactory} from "../../utils/PageUtil";
+import {cAction} from "../../utils/redux-helper";
+import {AnyAction} from "redux";
+import {AtActivityIndicator} from "taro-ui";
 
-type PageStateProps = {
-
-}
+type PageStateProps = {}
 
 type PageDispatchProps = {
-
+  login: (string) => AnyAction,
+  loading: boolean
 }
 
 type PageOwnProps = {}
 
 type PageState = {
-  selected:string
+  accessToken: string
 }
 type IProps = PageStateProps & PageDispatchProps & PageOwnProps
 
-interface Login {
+interface Tokenlogin {
   props: IProps;
-  state:PageState;
+  state: PageState;
 }
-@connect(({login}) => ({
-  ...login,
+
+@connect(({loading}) => ({loading: loading.effects['user/loginEff']}), (dispatch) => ({
+  login: (token) => dispatch(cAction('user/loginEff', token))
 }))
-class Login extends Component {
+class Tokenlogin extends Component {
   config = {
-    navigationBarTitleText: 'login',
+    navigationBarTitleText: 'Access Token',
   };
 
   // 构造
-    constructor(props) {
-      super(props);
-      // 初始状态
-      this.state = {
-        selected:''
-      };
-      this.userFocus = this.createOnFocus('user');
-      this.passFocus = this.createOnFocus('pass');
-    }
+  constructor(props) {
+    super(props);
+    // 初始状态
+    this.state = {
+      accessToken: '6f79f072-7297-47de-9f10-9d84f16b7f56'
+    };
+    let createBind = changeHandlerFactory(this);
+    this.onChange = createBind('accessToken');
+  }
+
+  onChange;
 
   componentDidMount = () => {
 
   };
-  userFocus;
-  passFocus;
 
-  onFocus = (ev) => {
-    console.log(ev)
-  };
-
-  createOnFocus = (selected) => {
-    return () => {
-      this.setState({selected})
-    }
+  login = () => {
+    let {accessToken} = this.state;
+    let {login} = this.props;
+    login(accessToken);
   };
 
   render() {
-    let {selected} = this.state;
-
+    let {accessToken} = this.state;
+    let {loading} = this.props;
     return (
       <View className="login-page">
-        {/* 头部标题 */}
-        <View className="header">
-          <Text className="title">CNode</Text>
-          <View className="close-btn">
-            <Image className={'close-btn-icon'} src={require('../../asset/images/home.png')}/>
-          </View>
-        </View>
-        {/*表单*/}
-        <View className="content">
-          <View className={`form-input ${selected === 'user' ? 'selected' : ''}`}>
-            <Input onFocus={this.userFocus} className={'input'} placeholder={'用户名'} type='text' />
-          </View>
-          <View className={`form-input ${selected === 'pass' ? 'selected' : ''}`}>
-            <Input onFocus={this.passFocus} className={'input'} placeholder={'密码'} password={true} />
-          </View>
-        </View>
-        {/*按钮*/}
-        <View className={'submit-btn'}>
-          <Text className={'btn-text'}>登录</Text>
-        </View>
+        {loading ? <AtActivityIndicator content='加载中' mode='center'/> :
+          (
+            <View>
+              {/* 头部标题 */}
+              <View className="header">
+                <Text className="title">CNode</Text>
+                <View className="close-btn">
+                  <Image className={'close-btn-icon'} src={require('../../asset/images/close.png')}/>
+                </View>
+              </View>
+              {/*表单*/}
+              <View className="content">
+                <View className={`form-input selected`}>
+                  <Input onInput={this.onChange} value={accessToken} className={'input'} placeholder={'Access Token'}
+                         type='text'/>
+                </View>
+              </View>
+              {/*按钮*/}
+              <View onClick={this.login} className={'footer'}>
+                <Text className={'btn-text'}>登录</Text>
+              </View>
+            </View>
+          )}
       </View>
     )
   }
 }
 
-export default Login as ComponentClass<PageOwnProps, PageState>
+export default Tokenlogin as ComponentClass<PageOwnProps, PageState>
